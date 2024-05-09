@@ -7,6 +7,11 @@ package Nfe;
 
 import Bean.Fiscal;
 import DAO.FiscalDAO;
+import Enum.StatusEnum;
+import Enum.TipoManifestacao;
+import static Nfe.ConsultarNFeSefaz.iniciaConfigurações;
+import Util.XmlUtil;
+import View.NotasFiscais;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envConfRecebto.TRetEnvEvento;
 
@@ -62,14 +67,14 @@ public class ManifestaçãoNfe {
             TRetEnvEvento retorno = Nfe.manifestacao(chave, tipoManifestacao, cnpj, motivo, XmlUtil.dataNfe());
 
             if (!StatusEnum.LOTE_EVENTO_PROCESSADO.getCodigo().equals(retorno.getCStat())) {
-                sb.append("Status:" + retorno.getCStat() + "\nMotivo:" + retorno.getXMotivo());
+                sb.append("Status:").append(retorno.getCStat()).append("\nMotivo:").append(retorno.getXMotivo());
                 NotasFiscais.retornoManifestação.setText(sb.toString());
                 throw new NfeException("Status:" + retorno.getCStat() + " - Motivo:" + retorno.getXMotivo());
 
             }
 
             if (!StatusEnum.EVENTO_VINCULADO.getCodigo().equals(retorno.getRetEvento().get(0).getInfEvento().getCStat())) {
-                sb.append("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat() + "\n Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
+                sb.append("Status:").append(retorno.getRetEvento().get(0).getInfEvento().getCStat()).append("\n Motivo:").append(retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
                 NotasFiscais.retornoManifestação.setText(sb.toString());
                 throw new NfeException("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat() + " - Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
             }
@@ -77,9 +82,9 @@ public class ManifestaçãoNfe {
             System.out.println("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat());
             System.out.println("Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
             System.out.println("Data:" + retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
-            sb.append("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat());
-            sb.append("Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
-            sb.append("Data:" + retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
+            sb.append("Status:").append(retorno.getRetEvento().get(0).getInfEvento().getCStat());
+            sb.append("Motivo:").append(retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
+            sb.append("Data:").append(retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
 
             NotasFiscais.retornoManifestação.setText(sb.toString());
 
