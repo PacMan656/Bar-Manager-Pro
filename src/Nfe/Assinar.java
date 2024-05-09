@@ -1,5 +1,6 @@
 package Nfe;
 
+import Util.XmlUtil;
 import br.com.swconsultoria.certificado.Certificado;
 import br.com.swconsultoria.certificado.CertificadoService;
 import br.com.swconsultoria.certificado.exception.CertificadoException;

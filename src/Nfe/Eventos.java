@@ -1,6 +1,9 @@
 package Nfe;
 
 
+import Util.ConstantesUtil;
+import Util.ObjetoUtil;
+import Util.WebServiceUtil;
 import br.com.swconsultoria.nfe.wsdl.NFeRecepcaoEvento.NFeRecepcaoEvento4Stub;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
@@ -8,12 +11,6 @@ import org.apache.axis2.transport.http.HTTPConstants;
 
 import javax.xml.stream.XMLStreamException;
 import java.rmi.RemoteException;
-import nfe.dom.ConfiguracoesNfe;
-import nfe.exception.NfeException;
-import nfe.exception.NfeValidacaoException;
-import nfe.util.ConstantesUtil;
-import nfe.util.ObjetoUtil;
-import nfe.util.WebServiceUtil;
 
 class Eventos {
 

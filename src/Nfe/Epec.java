@@ -1,17 +1,13 @@
 package Nfe;
 
-
+import Util.ConstantesUtil;
+import Util.XmlUtil;
 import br.com.swconsultoria.nfe.schema.envEpec.TEnvEvento;
 import br.com.swconsultoria.nfe.schema.envEpec.TRetEnvEvento;
 import javax.xml.bind.JAXBException;
-import nfe.dom.ConfiguracoesNfe;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.XmlUtil;
 
 /**
- * @author Samuel Oliveira - samuk.exe@hotmail.com
- * Data: 28/09/2017 - 11:11
+ * @author Samuel Oliveira - samuk.exe@hotmail.com Data: 28/09/2017 - 11:11
  */
 class Epec {
 

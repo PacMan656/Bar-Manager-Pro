@@ -5,24 +5,26 @@
  */
 package Controler;
 
+import Enum.StatusEnum;
+import Nfe.ConfiguracoesIniciaisNfe;
+import static Nfe.ConsultarNFeSefaz.iniciaConfigurações;
+import Nfe.Nfe;
+import Nfe.NfeException;
+import Util.ConstantesUtil;
+import Util.XmlUtil;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envEpec.*;
-import static gerenciador.AcoesNfe.ConsultarNFeSefaz.iniciaConfigurações;
+import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBException;
-import nfe.Nfe;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.dom.Enum.StatusEnum;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.XmlUtil;
+
 /**
  *
  * @author Marcos
  */
 public class EnvioEPec {
     
-    public static void main(String[] args) throws br.com.swconsultoria.nfe.exception.NfeException {
+    public static void main(String[] args) throws br.com.swconsultoria.nfe.exception.NfeException, NfeException, FileNotFoundException {
 
         try {
 

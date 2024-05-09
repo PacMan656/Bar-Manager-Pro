@@ -1,5 +1,9 @@
 package Nfe;
 
+import Util.ConstantesUtil;
+import Util.ObjetoUtil;
+import Util.WebServiceUtil;
+import Util.XmlUtil;
 import br.com.swconsultoria.nfe.schema_4.inutNFe.TInutNFe;
 import br.com.swconsultoria.nfe.schema_4.inutNFe.TRetInutNFe;
 import br.com.swconsultoria.nfe.wsdl.NFeInutilizacao.NFeInutilizacao4Stub;
@@ -11,13 +15,6 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.rmi.RemoteException;
-import nfe.dom.ConfiguracoesNfe;
-import nfe.exception.NfeException;
-import nfe.exception.NfeValidacaoException;
-import nfe.util.ConstantesUtil;
-import nfe.util.ObjetoUtil;
-import nfe.util.WebServiceUtil;
-import nfe.util.XmlUtil;
 
 /**
  * Classe Responsavel por inutilizar uma Faixa de numeracao da Nfe.
@@ -28,73 +25,73 @@ class Inutilizar {
 
     static TInutNFe criaObjetoInutiliza(ConfiguracoesNfe config, String id, String motivo, String tipo) {
 
-		TInutNFe inutNFe = new TInutNFe();
-		inutNFe.setVersao(ConstantesUtil.VERSAO.INUTILIZACAO);
+        TInutNFe inutNFe = new TInutNFe();
+        inutNFe.setVersao(ConstantesUtil.VERSAO.INUTILIZACAO);
 
-		TInutNFe.InfInut infInut = new TInutNFe.InfInut();
-		infInut.setId(id);
-		infInut.setTpAmb(config.getAmbiente());
-		infInut.setXServ("INUTILIZAR");
-		infInut.setCUF(id.substring(2, 4));
-		infInut.setAno(id.substring(4, 6));
+        TInutNFe.InfInut infInut = new TInutNFe.InfInut();
+        infInut.setId(id);
+        infInut.setTpAmb(config.getAmbiente());
+        infInut.setXServ("INUTILIZAR");
+        infInut.setCUF(id.substring(2, 4));
+        infInut.setAno(id.substring(4, 6));
 
-		infInut.setCNPJ(id.substring(6, 20));
-		infInut.setMod(tipo.equals(ConstantesUtil.NFE) ? "55" : "65");
-		infInut.setSerie(Integer.valueOf(id.substring(22, 25)).toString());
+        infInut.setCNPJ(id.substring(6, 20));
+        infInut.setMod(tipo.equals(ConstantesUtil.NFE) ? "55" : "65");
+        infInut.setSerie(Integer.valueOf(id.substring(22, 25)).toString());
 
-		infInut.setNNFIni(Integer.valueOf(id.substring(25, 34)).toString());
-		infInut.setNNFFin(Integer.valueOf(id.substring(34, 43)).toString());
+        infInut.setNNFIni(Integer.valueOf(id.substring(25, 34)).toString());
+        infInut.setNNFFin(Integer.valueOf(id.substring(34, 43)).toString());
 
-		infInut.setXJust(motivo);
-		inutNFe.setInfInut(infInut);
+        infInut.setXJust(motivo);
+        inutNFe.setInfInut(infInut);
 
-		return inutNFe;
-	}
+        return inutNFe;
+    }
 
-	static TRetInutNFe inutiliza(ConfiguracoesNfe config, String id, String motivo, String tipo, boolean validar)
-			throws NfeException, br.com.swconsultoria.nfe.exception.NfeException {
+    static TRetInutNFe inutiliza(ConfiguracoesNfe config, String id, String motivo, String tipo, boolean validar)
+            throws NfeException, br.com.swconsultoria.nfe.exception.NfeException {
 
-		try {
+        try {
 
-			TInutNFe inutNFe = criaObjetoInutiliza(config, id, motivo, tipo);
+            TInutNFe inutNFe = criaObjetoInutiliza(config, id, motivo, tipo);
 
-			String xml = XmlUtil.objectToXml(inutNFe);
-			xml = xml.replaceAll(" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"", "");
+            String xml = XmlUtil.objectToXml(inutNFe);
+            xml = xml.replaceAll(" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"", "");
 
-			xml = Assinar.assinaNfe(config, xml, Assinar.INFINUT);
+            xml = Assinar.assinaNfe(config, xml, Assinar.INFINUT);
 
-			if (validar) {
-				String erros = Validar.validaXml(config, xml, Validar.INUTILIZACAO);
-				if (!ObjetoUtil.isEmpty(erros)) {
-					throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
-				}
-			}
+            if (validar) {
+                String erros = Validar.validaXml(config, xml, Validar.INUTILIZACAO);
+                if (!ObjetoUtil.isEmpty(erros)) {
+                    throw new NfeValidacaoException("Erro Na Validação do Xml: " + erros);
+                }
+            }
 
-			if (config.isLog()) {
-				System.out.println("Xml Inutilizar: " + xml);
-			}
-			OMElement ome = AXIOMUtil.stringToOM(xml);
+            if (config.isLog()) {
+                System.out.println("Xml Inutilizar: " + xml);
+            }
+            OMElement ome = AXIOMUtil.stringToOM(xml);
 
-			NFeInutilizacao4Stub.NfeDadosMsg dadosMsg = new NFeInutilizacao4Stub.NfeDadosMsg();
-			dadosMsg.setExtraElement(ome);
+            NFeInutilizacao4Stub.NfeDadosMsg dadosMsg = new NFeInutilizacao4Stub.NfeDadosMsg();
+            dadosMsg.setExtraElement(ome);
 
-			NFeInutilizacao4Stub stub = new NFeInutilizacao4Stub(
-					WebServiceUtil.getUrl(config, tipo, ConstantesUtil.SERVICOS.INUTILIZACAO));
+            NFeInutilizacao4Stub stub = new NFeInutilizacao4Stub(
+                    WebServiceUtil.getUrl(config, tipo, ConstantesUtil.SERVICOS.INUTILIZACAO));
 
-			// Timeout
-			if (!ObjetoUtil.isEmpty(config.getTimeout())) {
-				stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, config.getTimeout());
-				stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
-						config.getTimeout());
-			}
+            // Timeout
+            if (!ObjetoUtil.isEmpty(config.getTimeout())) {
+                stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, config.getTimeout());
+                stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
+                        config.getTimeout());
+            }
 
-			NFeInutilizacao4Stub.NfeResultMsg result = stub.nfeInutilizacaoNF(dadosMsg);
+            NFeInutilizacao4Stub.NfeResultMsg result = stub.nfeInutilizacaoNF(dadosMsg);
 
-			return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetInutNFe.class);
-		} catch (RemoteException | XMLStreamException | JAXBException e) {
-			throw new NfeException(e.getMessage());
-		}
+            return XmlUtil.xmlToObject(result.getExtraElement().toString(), TRetInutNFe.class);
+        } catch (RemoteException | XMLStreamException | JAXBException e) {
+            throw new NfeException(e.getMessage());
+        }
 
-	}
+    }
 
 }

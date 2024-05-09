@@ -7,6 +7,8 @@ package Nfe;
 
 
 import static Controler.ConsultarNFeSefaz.iniciaConfigurações;
+import Enum.StatusEnum;
+import Util.ConstantesUtil;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TEnvEvento;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TEvento;

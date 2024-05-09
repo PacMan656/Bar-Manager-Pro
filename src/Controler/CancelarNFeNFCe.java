@@ -6,16 +6,19 @@
 package Controler;
 
 import Enum.StatusEnum;
+import Nfe.ConfiguracoesIniciaisNfe;
 import static Nfe.IniciaConfiguraçãoNfce.iniciaConfigurações;
 import Nfe.Nfe;
 import Nfe.NfeException;
 import Util.ConstantesUtil;
+import Util.XmlUtil;
 import View.NotasFiscais;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TEnvEvento;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TEvento;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TProcEvento;
 import br.com.swconsultoria.nfe.schema.envEventoCancNFe.TRetEnvEvento;
+import java.io.FileNotFoundException;
 
 import javax.xml.bind.JAXBException;
 
@@ -30,7 +33,7 @@ public class CancelarNFeNFCe {
     public static String cnpj;
     public static String motivo;
 
-    public void recebe(String chave1, String protocolo1, String cnpj1, String motivo1) throws br.com.swconsultoria.nfe.exception.NfeException {
+    public void recebe(String chave1, String protocolo1, String cnpj1, String motivo1) throws br.com.swconsultoria.nfe.exception.NfeException, FileNotFoundException {
 
         chave = chave1;
         protocolo = protocolo1;
@@ -41,7 +44,7 @@ public class CancelarNFeNFCe {
 
     }
 
-    public static void recebe() throws br.com.swconsultoria.nfe.exception.NfeException {
+    public static void recebe() throws br.com.swconsultoria.nfe.exception.NfeException, FileNotFoundException {
 
         try {
 

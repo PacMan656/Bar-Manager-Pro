@@ -69,6 +69,7 @@ public class NfeWeb {
      * Metodo Responsavel Buscar o Status de Serviço do Servidor da Sefaz No
      * tipo Informar ConstantesUtil.NFE ou ConstantesUtil.NFCE
      *
+     * @param config
      * @param tipo
      * @return
      * @throws NfeException
@@ -83,10 +84,12 @@ public class NfeWeb {
      * Classe Reponsavel Por Consultar o status da NFE na SEFAZ No tipo Informar
      * ConstantesUtil.NFE ou ConstantesUtil.NFCE
      *
+     * @param config
      * @param chave
      * @param tipo
      * @return TRetConsSitNFe
      * @throws NfeException
+     * @throws br.com.swconsultoria.nfe.exception.NfeException
      */
     public static TRetConsSitNFe consultaXml(ConfiguracoesWebNfe config, String chave, String tipo)
             throws NfeException, br.com.swconsultoria.nfe.exception.NfeException {

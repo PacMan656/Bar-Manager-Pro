@@ -1,10 +1,9 @@
 package Nfe;
 
+import Util.ConstantesUtil;
+import Util.Estados;
+import Util.ProxyUtil;
 import br.com.swconsultoria.certificado.Certificado;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.Estados;
-import nfe.util.ProxyUtil;
 
 /**
  *

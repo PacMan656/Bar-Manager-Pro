@@ -5,17 +5,15 @@
  */
 package Nfe;
 
+import Enum.StatusEnum;
+import static Nfe.ConsultarNFeSefaz.iniciaConfigurações;
+import Util.ConstantesUtil;
+import Util.XmlUtil;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envEpec.*;
-import static gerenciador.AcoesNfe.ConsultarNFeSefaz.iniciaConfigurações;
 
 import javax.xml.bind.JAXBException;
-import nfe.Nfe;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.dom.Enum.StatusEnum;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.XmlUtil;
+
 /**
  *
  * @author Marcos

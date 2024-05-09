@@ -5,59 +5,56 @@
  */
 package Nfe;
 
+import Enum.StatusEnum;
+import static Nfe.ConsultarNFeSefaz.iniciaConfigurações;
+import Util.ConstantesUtil;
+import Util.XmlUtil;
+import View.NotasFiscais;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envcce.TEnvEvento;
 import br.com.swconsultoria.nfe.schema.envcce.TProcEvento;
 import br.com.swconsultoria.nfe.schema.envcce.TRetEnvEvento;
-import static gerenciador.AcoesNfe.ConsultarNFeSefaz.iniciaConfigurações;
-import gerenciador.Modulos.NotasFiscais;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
-import nfe.Nfe;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.dom.Enum.StatusEnum;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.XmlUtil;
+
 /**
  *
  * @author Marcos
  */
 public class CartaCorrecaoEletronica {
-    
+
     public static String chave;
     public static String cnpj;
     public static String sequencia;
     public static String motivo;
-    
-    
-    public void recebe(String chave1, String cnpj1, String sequencia1, String motivo1){
-    
+
+    public void recebe(String chave1, String cnpj1, String sequencia1, String motivo1) {
+
         chave = chave1;
-             cnpj = cnpj1;
-             sequencia = sequencia1;
-             motivo = motivo1;
-    
-    mandacarta();
-    
+        cnpj = cnpj1;
+        sequencia = sequencia1;
+        motivo = motivo1;
+
+        mandacarta();
+
     }
-    
+
     public static void mandacarta() {
-        
+
         StringBuilder sb = new StringBuilder();
 
         try {
 
             // Inicia As Configurações - ver https://github.com/Samuel-Oliveira/Java_NFe/wiki/1-:-Configuracoes
-            ConfiguracoesIniciaisNfe config = iniciaConfigurações();  
+            ConfiguracoesIniciaisNfe config = iniciaConfigurações();
 
             //String chave = "XXX";
-           // String cnpj = "XXX";
+            // String cnpj = "XXX";
             //String sequencia = "XXX";
             //String motivo = "XXX";
-
             String id = "ID" + ConstantesUtil.EVENTO.CCE + chave + (sequencia.length() < 2 ? "0" + sequencia : sequencia);
 
             TEnvEvento envEvento = new TEnvEvento();
@@ -98,14 +95,14 @@ public class CartaCorrecaoEletronica {
 
             TRetEnvEvento retorno = Nfe.cce(envEvento, false, ConstantesUtil.NFE);
 
-            if(!StatusEnum.LOTE_EVENTO_PROCESSADO.getCodigo().equals(retorno.getCStat())){
-                sb.append("Status:" + retorno.getCStat() + " - Motivo:" + retorno.getXMotivo());
+            if (!StatusEnum.LOTE_EVENTO_PROCESSADO.getCodigo().equals(retorno.getCStat())) {
+                sb.append("Status:").append(retorno.getCStat()).append(" - Motivo:").append(retorno.getXMotivo());
                 NotasFiscais.jTextPane4.setText(sb.toString());
                 throw new NfeException("Status:" + retorno.getCStat() + " - Motivo:" + retorno.getXMotivo());
             }
 
-            if(!StatusEnum.EVENTO_VINCULADO.getCodigo().equals(retorno.getRetEvento().get(0).getInfEvento().getCStat())){
-                sb.append("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat() + " - Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
+            if (!StatusEnum.EVENTO_VINCULADO.getCodigo().equals(retorno.getRetEvento().get(0).getInfEvento().getCStat())) {
+                sb.append("Status:").append(retorno.getRetEvento().get(0).getInfEvento().getCStat()).append(" - Motivo:").append(retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
                 NotasFiscais.jTextPane4.setText(sb.toString());
                 throw new NfeException("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat() + " - Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
             }
@@ -113,10 +110,9 @@ public class CartaCorrecaoEletronica {
             System.out.println("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat());
             System.out.println("Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
             System.out.println("Data:" + retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
-            sb.append("Status:" + retorno.getRetEvento().get(0).getInfEvento().getCStat());
-            sb.append("Motivo:" + retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
-            sb.append("Data:" + retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
-            
+            sb.append("Status:").append(retorno.getRetEvento().get(0).getInfEvento().getCStat());
+            sb.append("Motivo:").append(retorno.getRetEvento().get(0).getInfEvento().getXMotivo());
+            sb.append("Data:").append(retorno.getRetEvento().get(0).getInfEvento().getDhRegEvento());
 
             // Criação do ProcEventoNFe
             TProcEvento procEvento = new TProcEvento();
@@ -137,12 +133,11 @@ public class CartaCorrecaoEletronica {
             }
             System.out.println(xmlProcEventoNfe);
             NotasFiscais.jTextPane4.setText(sb.toString());
-            
 
         } catch (CertificadoException | NfeException | JAXBException e) {
             System.err.println(e.getMessage());
         }
 
     }
-    
+
 }

@@ -4,23 +4,25 @@
  * and open the template in the editor.
  */
 package Controler;
+import Bean.Fiscal;
+import DAO.FiscalDAO;
+import Nfe.ConfiguracoesIniciaisNfe;
+import Nfe.Nfe;
+import Nfe.NfeException;
+import Util.ConstantesUtil;
+import Util.Estados;
+import Util.XmlUtil;
+import View.NotasFiscais;
 import br.com.swconsultoria.certificado.Certificado;
 import br.com.swconsultoria.certificado.CertificadoService;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema_4.consSitNFe.TConsSitNFe;
 import br.com.swconsultoria.nfe.schema_4.retConsSitNFe.TRetConsSitNFe;
-import gerenciador.Modulos.NotasFiscais;
+import java.io.FileNotFoundException;
 import javax.swing.JOptionPane;
 
 import javax.xml.bind.JAXBException;
-import model.bean.Fiscal;
-import model.dao.FiscalDAO;
-import nfe.Nfe;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.Estados;
-import nfe.util.XmlUtil;
+
 /**
  *
  * @author Marcos
@@ -28,7 +30,7 @@ import nfe.util.XmlUtil;
 public class ConsultarNFeSefaz {
     
     public static String chave;
-    public void recebechave(String chave1) throws CertificadoException, NfeException, br.com.swconsultoria.nfe.exception.NfeException{
+    public void recebechave(String chave1) throws CertificadoException, NfeException, br.com.swconsultoria.nfe.exception.NfeException, FileNotFoundException{
     
     chave = chave1;
     
@@ -38,7 +40,7 @@ public class ConsultarNFeSefaz {
     a.chave(chave);
     }
     
-    public static void consulta() throws CertificadoException, NfeException, br.com.swconsultoria.nfe.exception.NfeException {
+    public static void consulta() throws CertificadoException, NfeException, br.com.swconsultoria.nfe.exception.NfeException, FileNotFoundException {
 
         try {  
       //Inicia As Configurações  
@@ -76,7 +78,7 @@ public class ConsultarNFeSefaz {
 
     }
     
-    public static ConfiguracoesIniciaisNfe iniciaConfigurações() throws NfeException, CertificadoException {
+    public static ConfiguracoesIniciaisNfe iniciaConfigurações() throws NfeException, CertificadoException, FileNotFoundException {
         
         ConfiguracoesIniciaisNfe config = null;
             // Certificado Arquivo, Parametros: -Caminho Certificado, - Senha
@@ -111,7 +113,7 @@ public class ConsultarNFeSefaz {
          return config;
 }
  
- private static Certificado certifidoA1Pfx() throws CertificadoException {
+ private static Certificado certifidoA1Pfx() throws CertificadoException, FileNotFoundException {
          
          FiscalDAO fdao = new FiscalDAO();
          String caminhoCertificado = null;

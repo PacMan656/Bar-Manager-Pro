@@ -3,10 +3,11 @@
  */
 package Nfe;
 
+import Util.Estados;
+import Util.ProxyUtil;
 import br.com.swconsultoria.certificado.Certificado;
 import br.com.swconsultoria.nfe.util.ConstantesUtil;
-import nfe.util.Estados;
-import nfe.util.ProxyUtil;
+
 
 /**
  * @author Samuel Oliveira

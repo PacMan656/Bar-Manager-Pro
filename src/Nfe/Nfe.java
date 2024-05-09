@@ -203,8 +203,11 @@ public class Nfe {
      * ConstantesUtil.NFCE
      *
      * @param envEvento
+     * @param valida
+     * @param tipo
      * @return
      * @throws NfeException
+     * @throws br.com.swconsultoria.nfe.exception.NfeException
      */
     public static br.com.swconsultoria.nfe.schema.envEpec.TRetEnvEvento enviarEpec(br.com.swconsultoria.nfe.schema.envEpec.TEnvEvento envEvento, boolean valida, String tipo) throws NfeException, br.com.swconsultoria.nfe.exception.NfeException {
 

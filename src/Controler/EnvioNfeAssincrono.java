@@ -5,44 +5,45 @@
  */
 package Controler;
 
+import Enum.StatusEnum;
+import Nfe.ConfiguracoesIniciaisNfe;
+import static Nfe.ConsultarNFeSefaz.iniciaConfigurações;
+import Nfe.Nfe;
+import Nfe.NfeException;
+import Util.ConstantesUtil;
+import Util.XmlUtil;
 import br.com.swconsultoria.nfe.schema_4.retConsReciNFe.TRetConsReciNFe;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema_4.enviNFe.*;
-import static gerenciador.AcoesNfe.ConsultarNFeSefaz.iniciaConfigurações;
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import nfe.Nfe;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.dom.Enum.StatusEnum;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.XmlUtil;
+
 /**
  *
  * @author Marcos
  */
 public class EnvioNfeAssincrono {
-    
-   public static void Emitir() throws br.com.swconsultoria.nfe.exception.NfeException{
 
-    try {
+    public static void Emitir() throws br.com.swconsultoria.nfe.exception.NfeException, NfeException, FileNotFoundException {
+
+        try {
             //Inicia As Configurações  
-      ConfiguracoesIniciaisNfe config = iniciaConfigurações();  
+            ConfiguracoesIniciaisNfe config = iniciaConfigurações();
 
             //TAG raiz da NF-e
             TNFe nfe = new TNFe();
-            
+
             /*Dados da Nota Fiscal eletrônica
             infNFe   - Informações da NF-e  */
             TNFe.InfNFe infNFe = new TNFe.InfNFe();
             infNFe.setId("xxx");//Identificador da TAG a ser assinada
             infNFe.setVersao("4.00");//Versão do leiaute
 
-            
             /*Identificação da Nota Fiscal eletrônica
             ide     - Informações de identificação da NF-e*/
             // Dados Nfe
@@ -115,12 +116,12 @@ public class EnvioNfeAssincrono {
             dest.setEmail("xxx");//Email
             dest.setIndIEDest("xxx");//Indicador da IE do Destinatário
             infNFe.setDest(dest);
-            
+
             /*Detalhamento de Produtos e Serviços da NF-e*/
             //det   - Detalhamento de Produtos e Serviços
             TNFe.InfNFe.Det det = new TNFe.InfNFe.Det();
             det.setNItem("1"); //Número do item
-            
+
             /*Produtos e Serviços da NF-e*/
             //prod  - Detalhamento de Produtos e Serviços
             TNFe.InfNFe.Det.Prod prod = new TNFe.InfNFe.Det.Prod();
@@ -160,7 +161,7 @@ public class EnvioNfeAssincrono {
             icms.setICMS60(getICMS60());//Pega todos os dados icms 60
             icms.setICMS70(getICMS70());//Pega todos os dados icms 70
             icms.setICMS90(getICMS90());//Pega todos os dados icms 90
-            
+
             //Informações do PIS
             //pis   - Grupo PIS
             TNFe.InfNFe.Det.Imposto.PIS pis = new TNFe.InfNFe.Det.Imposto.PIS();
@@ -188,8 +189,6 @@ public class EnvioNfeAssincrono {
             det.setImposto(imposto);//det   - Detalhamento de Produtos e Serviços
             infNFe.getDet().add(det);//infNFe   - Informações da NF-e
 
-            
-            
             /*Total da NF-e*/
             //total - Grupo Totais da NF-e
             TNFe.InfNFe.Total total = new TNFe.InfNFe.Total();
@@ -218,13 +217,12 @@ public class EnvioNfeAssincrono {
             total.setICMSTot(icmstot);
             infNFe.setTotal(total);
 
-            
             /*Informações do Transporte da NF-e*/
             //transp    - Grupo Informações do Transporte
             TNFe.InfNFe.Transp transp = new TNFe.InfNFe.Transp();
             transp.setModFrete("xxx");//Modalidade do frete
             infNFe.setTransp(transp);
-            
+
             //infAdic   - Grupo de Informações Adicionais
             TNFe.InfNFe.InfAdic infAdic = new TNFe.InfNFe.InfAdic();
             infAdic.setInfCpl("xxx");//Informações Complementares de interesse
@@ -238,10 +236,9 @@ public class EnvioNfeAssincrono {
             pag.getDetPag().add(detPag);
 
             infNFe.setPag(pag);*/
-
             //MANDA TODAS INFORMAÇOES PRA NFE
             nfe.setInfNFe(infNFe);
-            
+
             // Monta EnviNfe
             TEnviNFe enviNFe = new TEnviNFe();
             enviNFe.setVersao("4.00");
@@ -252,7 +249,6 @@ public class EnvioNfeAssincrono {
                                     esse número é exclusiva do contribuinte.*/
             enviNFe.setIndSinc("1");
             enviNFe.getNFe().add(nfe);
-
 
             enviNFe = Nfe.montaNfe(enviNFe, true);
 
@@ -288,283 +284,264 @@ public class EnvioNfeAssincrono {
             System.out.println("Data: " + retornoNfe.getProtNFe().get(0).getInfProt().getDhRecbto());
             System.out.println("Protocolo: " + retornoNfe.getProtNFe().get(0).getInfProt().getNProt());
 
-        try {
-            System.out.println("XML Final: " + XmlUtil.criaNfeProc(enviNFe, retornoNfe.getProtNFe().get(0)));
-        } catch (br.com.swconsultoria.nfe.exception.NfeException ex) {
-            Logger.getLogger(EnvioNfeAssincrono.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            try {
+                System.out.println("XML Final: " + XmlUtil.criaNfeProc(enviNFe, retornoNfe.getProtNFe().get(0)));
+            } catch (br.com.swconsultoria.nfe.exception.NfeException ex) {
+                Logger.getLogger(EnvioNfeAssincrono.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         } catch (NfeException | JAXBException | CertificadoException | InterruptedException e) {
             System.out.println("Erro:" + e.getMessage());
         }
-    
-}
-    
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS00 getICMS00(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS00 icms00 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS00();
-       icms00.setOrig("xxx"); //Origem da mercadoria (0)
-            icms00.setCST("xxx"); //Tributação do ICMS
-            icms00.setModBC("");//Modalidade de determinação da BC do ICMS
-            icms00.setVBC("");//Valor da BC do ICMS
-            icms00.setPICMS("");//Alíquota do imposto
-            icms00.setVICMS("");//Valor do ICMS
-       
-   return icms00;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS10 getICMS10(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS10 icms10 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS10();
-            icms10.setOrig("xxx"); //Origem da mercadoria (0)
-            icms10.setCST("xxx"); //Tributação do ICMS
-            icms10.setModBC("");//Modalidade de determinação da BC do ICMS
-            icms10.setVBC("");//Valor da BC do ICMS
-            icms10.setPICMS("");//Alíquota do imposto
-            icms10.setVICMS("");//Valor do ICMS
-            icms10.setModBCST("");//Modalidade de determinação da BC do ICMS ST
-            icms10.setPMVAST("");//Percentual da margem de valor Adicionado do ICMS ST
-            icms10.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
-            icms10.setVBCST("");//Valor da BC do ICMS ST
-            icms10.setPICMSST("");//Valor do ICMS ST
-            
-   return icms10;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS20 getICMS20(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS20 icms20 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS20();
-            icms20.setOrig("xxx"); //Origem da mercadoria (0)
-            icms20.setCST("xxx"); //Tributação do ICMS
-            icms20.setModBC("");//Modalidade de determinação da BC do ICMS
-            icms20.setPRedBC("");//Percentual da Redução de BC
-            icms20.setVBC("");//Valor da BC do ICMS
-            icms20.setPICMS("");//Alíquota do imposto
-            icms20.setVICMS("");//Valor do ICMS
-            icms20.setVICMSDeson("");//Valor do ICMS desonerado
-            icms20.setMotDesICMS("");//Motivo da desoneração do ICMS
-            
-            
-   return icms20;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS30 getICMS30(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS30 icms30 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS30();
-            icms30.setOrig("xxx"); //Origem da mercadoria (0)
-            icms30.setCST("xxx"); //Tributação do ICMS
-            icms30.setModBCST("");//Modalidade de determinação da BC do ICMS
-            icms30.setPMVAST("");//Percentual da margem de valor Adicionado
-            icms30.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
-            icms30.setVBCST("");//Valor da BC do ICMS ST
-            icms30.setPICMSST("");//Alíquota do imposto do ICMS ST
-            icms30.setVICMSST("");//Valor do ICMS ST
-            icms30.setVICMSDeson("");//Valor do ICMS desonerado
-            icms30.setMotDesICMS("");//Motivo da desoneração do ICMS
-            
-            
-   return icms30;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS40 getICMS404150(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS40 icms40 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS40();
-            icms40.setOrig("xxx"); //Origem da mercadoria (0)
-            icms40.setCST("xxx"); //Tributação do ICMS
-            icms40.setVICMSDeson("");//Valor do ICMS
-            icms40.setMotDesICMS("");//Motivo da desoneração do ICMS
-            
-            
-   return icms40;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS51 getICMS51(){
-   
-       
-       TNFe.InfNFe.Det.Imposto.ICMS.ICMS51 icms51 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS51();
-            icms51.setOrig("xxx"); //Origem da mercadoria (0)
-            icms51.setCST("xxx"); //Tributação do ICMS
-            icms51.setModBC("");//Modalidade de determinação da BC do
-            icms51.setPRedBC("");//Percentual da Redução de BC
-            icms51.setVBC("");//Valor da BC do ICMS
-            icms51.setPICMS("");//Alíquota do imposto
-            icms51.setVICMSOp("");//Valor do ICMS da Operação
-            icms51.setPDif("");//Percentual do diferimento
-            icms51.setVICMSDif("");//Valor do ICMS diferido
-            icms51.setVICMS("");//Valor do ICMS
-            
-   return icms51;
-   }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS60 getICMS60(){
-    
-        
-            TNFe.InfNFe.Det.Imposto.ICMS.ICMS60 icms60 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS60();
-            icms60.setOrig("xxx"); //Origem da mercadoria (0)
-            icms60.setCST("xxx"); //Tributação do ICMS
-            icms60.setVBCSTRet("xxx"); //Valor da BC do ICMS ST retido
-            icms60.setVICMSSTRet("xxx");//Valor do ICMS ST retido
-    
-    
-    return icms60;
-    
+
     }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS70 getICMS70(){
-    
-        
-            TNFe.InfNFe.Det.Imposto.ICMS.ICMS70 icms70 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS70();
-            icms70.setOrig("xxx"); //Origem da mercadoria (0)
-            icms70.setCST("xxx"); //Tributação do ICMS
-            icms70.setModBC("");//Modalidade de determinação da BC do
-            icms70.setPRedBC("");//Percentual da Redução de BC
-            icms70.setVBC("");//Valor da BC do ICMS
-            icms70.setPICMS("");//Alíquota do imposto
-            icms70.setVICMS("");//Valor do ICMS
-            icms70.setModBCST("");//Modalidade de determinação da BC do ICMS
-            icms70.setPMVAST("");//Percentual da margem de valor Adicionado
-            icms70.setVBCST("");//Valor da BC do ICMS ST
-            icms70.setPICMSST("");//Alíquota do imposto do ICMS ST
-            icms70.setVICMSST("");//Valor do ICMS ST
-            icms70.setVICMSDeson("");//Valor do ICMS desonerado
-            icms70.setMotDesICMS("");//Motivo da desoneração do ICMS
-            
-    
-    
-    return icms70;
-    
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS00 getICMS00() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS00 icms00 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS00();
+        icms00.setOrig("xxx"); //Origem da mercadoria (0)
+        icms00.setCST("xxx"); //Tributação do ICMS
+        icms00.setModBC("");//Modalidade de determinação da BC do ICMS
+        icms00.setVBC("");//Valor da BC do ICMS
+        icms00.setPICMS("");//Alíquota do imposto
+        icms00.setVICMS("");//Valor do ICMS
+
+        return icms00;
     }
-   public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS90 getICMS90(){
-    
-        
-            TNFe.InfNFe.Det.Imposto.ICMS.ICMS90 icms90 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS90();
-            icms90.setOrig("xxx"); //Origem da mercadoria (0)
-            icms90.setCST("xxx"); //Tributação do ICMS
-            icms90.setModBC("");//Modalidade de determinação da BC do
-            icms90.setPRedBC("");//Percentual da Redução de BC
-            icms90.setVBC("");//Valor da BC do ICMS
-            icms90.setPICMS("");//Alíquota do imposto
-            icms90.setVICMS("");//Valor do ICMS
-            icms90.setModBCST("");//Modalidade de determinação da BC do ICMS
-            icms90.setPMVAST("");//Percentual da margem de valor Adicionado
-            icms90.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
-            icms90.setVBCST("");//Valor da BC do ICMS ST
-            icms90.setPICMSST("");//Alíquota do imposto do ICMS ST
-            icms90.setVICMSST("");//Valor do ICMS ST
-            icms90.setVICMSDeson("");//Valor do ICMS desonerado
-            icms90.setMotDesICMS("");//Motivo da desoneração do ICMS
-            
-    
-    
-    return icms90;
-    
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS10 getICMS10() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS10 icms10 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS10();
+        icms10.setOrig("xxx"); //Origem da mercadoria (0)
+        icms10.setCST("xxx"); //Tributação do ICMS
+        icms10.setModBC("");//Modalidade de determinação da BC do ICMS
+        icms10.setVBC("");//Valor da BC do ICMS
+        icms10.setPICMS("");//Alíquota do imposto
+        icms10.setVICMS("");//Valor do ICMS
+        icms10.setModBCST("");//Modalidade de determinação da BC do ICMS ST
+        icms10.setPMVAST("");//Percentual da margem de valor Adicionado do ICMS ST
+        icms10.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
+        icms10.setVBCST("");//Valor da BC do ICMS ST
+        icms10.setPICMSST("");//Valor do ICMS ST
+
+        return icms10;
     }
-   
-   public static TNFe.InfNFe.Det.Imposto.PIS.PISAliq pisAli(){
-   
-   
-       TNFe.InfNFe.Det.Imposto.PIS.PISAliq pisAliq = new TNFe.InfNFe.Det.Imposto.PIS.PISAliq();
-            pisAliq.setCST("xxx");//Valor da Base de Cálculo do PIS
-            pisAliq.setVBC("xxx");//Valor da Base de Cálculo do PIS
-            pisAliq.setPPIS("xxx");//Alíquota do PIS (em percentual)
-            pisAliq.setVPIS("xxx");//Valor do PIS
-   
-   
-   
-   return pisAliq;
-   }
-   public static TNFe.InfNFe.Det.Imposto.PIS.PISQtde pisQtde(){
-   
-   
-       TNFe.InfNFe.Det.Imposto.PIS.PISQtde pisqtde = new TNFe.InfNFe.Det.Imposto.PIS.PISQtde();
-            pisqtde.setCST("xxx");//Valor da Base de Cálculo do PIS
-            pisqtde.setQBCProd("");//Quantidade Vendida
-            pisqtde.setVAliqProd("xxx");//Alíquota do PIS (em reais)
-            pisqtde.setVPIS("xxx");//Valor do PIS
-   
-   
-   
-   return pisqtde;
-   }
-   public static TNFe.InfNFe.Det.Imposto.PIS.PISNT PISNT(){
-   
-   
-       TNFe.InfNFe.Det.Imposto.PIS.PISNT naot = new TNFe.InfNFe.Det.Imposto.PIS.PISNT();
-            naot.setCST("xxx");//Valor da Base de Cálculo do PIS
-            
-   
-   
-   return naot;
-   }
-   public static TNFe.InfNFe.Det.Imposto.PIS.PISOutr PISOutr(){
-   
-   
-       TNFe.InfNFe.Det.Imposto.PIS.PISOutr pisoutr = new TNFe.InfNFe.Det.Imposto.PIS.PISOutr();
-            pisoutr.setCST("xxx");//Valor da Base de Cálculo do PIS
-            pisoutr.setPPIS("");//Alíquota do PIS (em percentual)
-            pisoutr.setVBC("");//Valor da Base de Cálculo do PIS
-            pisoutr.setQBCProd("");//Quantidade Vendida
-            pisoutr.setVAliqProd("xxx");//Alíquota do PIS (em reais)
-            pisoutr.setVPIS("xxx");//Valor do PIS
-   
-   
-   
-   return pisoutr;
-   }
-   public static TNFe.InfNFe.Det.Imposto.PISST pisSST(){
-   
-   
-       TNFe.InfNFe.Det.Imposto.PISST pisoutr = new TNFe.InfNFe.Det.Imposto.PISST();
-            
-            pisoutr.setPPIS("");//Alíquota do PIS (em percentual)
-            pisoutr.setVBC("");//Valor da Base de Cálculo do PIS
-            pisoutr.setQBCProd("");//Quantidade Vendida
-            pisoutr.setVAliqProd("xxx");//Alíquota do PIS (em reais)
-            pisoutr.setVPIS("xxx");//Valor do PIS
-   
-   
-   
-   return pisoutr;
-   }
-   
-   public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq cofinsAliq(){
-       
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS20 getICMS20() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS20 icms20 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS20();
+        icms20.setOrig("xxx"); //Origem da mercadoria (0)
+        icms20.setCST("xxx"); //Tributação do ICMS
+        icms20.setModBC("");//Modalidade de determinação da BC do ICMS
+        icms20.setPRedBC("");//Percentual da Redução de BC
+        icms20.setVBC("");//Valor da BC do ICMS
+        icms20.setPICMS("");//Alíquota do imposto
+        icms20.setVICMS("");//Valor do ICMS
+        icms20.setVICMSDeson("");//Valor do ICMS desonerado
+        icms20.setMotDesICMS("");//Motivo da desoneração do ICMS
+
+        return icms20;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS30 getICMS30() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS30 icms30 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS30();
+        icms30.setOrig("xxx"); //Origem da mercadoria (0)
+        icms30.setCST("xxx"); //Tributação do ICMS
+        icms30.setModBCST("");//Modalidade de determinação da BC do ICMS
+        icms30.setPMVAST("");//Percentual da margem de valor Adicionado
+        icms30.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
+        icms30.setVBCST("");//Valor da BC do ICMS ST
+        icms30.setPICMSST("");//Alíquota do imposto do ICMS ST
+        icms30.setVICMSST("");//Valor do ICMS ST
+        icms30.setVICMSDeson("");//Valor do ICMS desonerado
+        icms30.setMotDesICMS("");//Motivo da desoneração do ICMS
+
+        return icms30;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS40 getICMS404150() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS40 icms40 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS40();
+        icms40.setOrig("xxx"); //Origem da mercadoria (0)
+        icms40.setCST("xxx"); //Tributação do ICMS
+        icms40.setVICMSDeson("");//Valor do ICMS
+        icms40.setMotDesICMS("");//Motivo da desoneração do ICMS
+
+        return icms40;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS51 getICMS51() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS51 icms51 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS51();
+        icms51.setOrig("xxx"); //Origem da mercadoria (0)
+        icms51.setCST("xxx"); //Tributação do ICMS
+        icms51.setModBC("");//Modalidade de determinação da BC do
+        icms51.setPRedBC("");//Percentual da Redução de BC
+        icms51.setVBC("");//Valor da BC do ICMS
+        icms51.setPICMS("");//Alíquota do imposto
+        icms51.setVICMSOp("");//Valor do ICMS da Operação
+        icms51.setPDif("");//Percentual do diferimento
+        icms51.setVICMSDif("");//Valor do ICMS diferido
+        icms51.setVICMS("");//Valor do ICMS
+
+        return icms51;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS60 getICMS60() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS60 icms60 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS60();
+        icms60.setOrig("xxx"); //Origem da mercadoria (0)
+        icms60.setCST("xxx"); //Tributação do ICMS
+        icms60.setVBCSTRet("xxx"); //Valor da BC do ICMS ST retido
+        icms60.setVICMSSTRet("xxx");//Valor do ICMS ST retido
+
+        return icms60;
+
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS70 getICMS70() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS70 icms70 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS70();
+        icms70.setOrig("xxx"); //Origem da mercadoria (0)
+        icms70.setCST("xxx"); //Tributação do ICMS
+        icms70.setModBC("");//Modalidade de determinação da BC do
+        icms70.setPRedBC("");//Percentual da Redução de BC
+        icms70.setVBC("");//Valor da BC do ICMS
+        icms70.setPICMS("");//Alíquota do imposto
+        icms70.setVICMS("");//Valor do ICMS
+        icms70.setModBCST("");//Modalidade de determinação da BC do ICMS
+        icms70.setPMVAST("");//Percentual da margem de valor Adicionado
+        icms70.setVBCST("");//Valor da BC do ICMS ST
+        icms70.setPICMSST("");//Alíquota do imposto do ICMS ST
+        icms70.setVICMSST("");//Valor do ICMS ST
+        icms70.setVICMSDeson("");//Valor do ICMS desonerado
+        icms70.setMotDesICMS("");//Motivo da desoneração do ICMS
+
+        return icms70;
+
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.ICMS.ICMS90 getICMS90() {
+
+        TNFe.InfNFe.Det.Imposto.ICMS.ICMS90 icms90 = new TNFe.InfNFe.Det.Imposto.ICMS.ICMS90();
+        icms90.setOrig("xxx"); //Origem da mercadoria (0)
+        icms90.setCST("xxx"); //Tributação do ICMS
+        icms90.setModBC("");//Modalidade de determinação da BC do
+        icms90.setPRedBC("");//Percentual da Redução de BC
+        icms90.setVBC("");//Valor da BC do ICMS
+        icms90.setPICMS("");//Alíquota do imposto
+        icms90.setVICMS("");//Valor do ICMS
+        icms90.setModBCST("");//Modalidade de determinação da BC do ICMS
+        icms90.setPMVAST("");//Percentual da margem de valor Adicionado
+        icms90.setPRedBCST("");//Percentual da Redução de BC do ICMS ST
+        icms90.setVBCST("");//Valor da BC do ICMS ST
+        icms90.setPICMSST("");//Alíquota do imposto do ICMS ST
+        icms90.setVICMSST("");//Valor do ICMS ST
+        icms90.setVICMSDeson("");//Valor do ICMS desonerado
+        icms90.setMotDesICMS("");//Motivo da desoneração do ICMS
+
+        return icms90;
+
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.PIS.PISAliq pisAli() {
+
+        TNFe.InfNFe.Det.Imposto.PIS.PISAliq pisAliq = new TNFe.InfNFe.Det.Imposto.PIS.PISAliq();
+        pisAliq.setCST("xxx");//Valor da Base de Cálculo do PIS
+        pisAliq.setVBC("xxx");//Valor da Base de Cálculo do PIS
+        pisAliq.setPPIS("xxx");//Alíquota do PIS (em percentual)
+        pisAliq.setVPIS("xxx");//Valor do PIS
+
+        return pisAliq;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.PIS.PISQtde pisQtde() {
+
+        TNFe.InfNFe.Det.Imposto.PIS.PISQtde pisqtde = new TNFe.InfNFe.Det.Imposto.PIS.PISQtde();
+        pisqtde.setCST("xxx");//Valor da Base de Cálculo do PIS
+        pisqtde.setQBCProd("");//Quantidade Vendida
+        pisqtde.setVAliqProd("xxx");//Alíquota do PIS (em reais)
+        pisqtde.setVPIS("xxx");//Valor do PIS
+
+        return pisqtde;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.PIS.PISNT PISNT() {
+
+        TNFe.InfNFe.Det.Imposto.PIS.PISNT naot = new TNFe.InfNFe.Det.Imposto.PIS.PISNT();
+        naot.setCST("xxx");//Valor da Base de Cálculo do PIS
+
+        return naot;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.PIS.PISOutr PISOutr() {
+
+        TNFe.InfNFe.Det.Imposto.PIS.PISOutr pisoutr = new TNFe.InfNFe.Det.Imposto.PIS.PISOutr();
+        pisoutr.setCST("xxx");//Valor da Base de Cálculo do PIS
+        pisoutr.setPPIS("");//Alíquota do PIS (em percentual)
+        pisoutr.setVBC("");//Valor da Base de Cálculo do PIS
+        pisoutr.setQBCProd("");//Quantidade Vendida
+        pisoutr.setVAliqProd("xxx");//Alíquota do PIS (em reais)
+        pisoutr.setVPIS("xxx");//Valor do PIS
+
+        return pisoutr;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.PISST pisSST() {
+
+        TNFe.InfNFe.Det.Imposto.PISST pisoutr = new TNFe.InfNFe.Det.Imposto.PISST();
+
+        pisoutr.setPPIS("");//Alíquota do PIS (em percentual)
+        pisoutr.setVBC("");//Valor da Base de Cálculo do PIS
+        pisoutr.setQBCProd("");//Quantidade Vendida
+        pisoutr.setVAliqProd("xxx");//Alíquota do PIS (em reais)
+        pisoutr.setVPIS("xxx");//Valor do PIS
+
+        return pisoutr;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq cofinsAliq() {
+
         TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq cofinsAliq = new TNFe.InfNFe.Det.Imposto.COFINS.COFINSAliq();
-            cofinsAliq.setCST("xxx");//Código de Situação Tributária da COFINS
-            cofinsAliq.setVBC("xxx");//Valor da Base de Cálculo da COFINS
-            cofinsAliq.setPCOFINS("xxx");//Alíquota da COFINS (em percentual)
-            cofinsAliq.setVCOFINS("xxx");//Valor da COFINS
-   
-   return cofinsAliq;
-   }
-   public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSQtde cofinsQtde(){
-       
+        cofinsAliq.setCST("xxx");//Código de Situação Tributária da COFINS
+        cofinsAliq.setVBC("xxx");//Valor da Base de Cálculo da COFINS
+        cofinsAliq.setPCOFINS("xxx");//Alíquota da COFINS (em percentual)
+        cofinsAliq.setVCOFINS("xxx");//Valor da COFINS
+
+        return cofinsAliq;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSQtde cofinsQtde() {
+
         TNFe.InfNFe.Det.Imposto.COFINS.COFINSQtde cofinsQtde = new TNFe.InfNFe.Det.Imposto.COFINS.COFINSQtde();
-            cofinsQtde.setCST("xxx");//Código de Situação Tributária da COFINS
-            cofinsQtde.setQBCProd("xxx");//Quantidade Vendida
-            cofinsQtde.setVAliqProd("xxx");//Alíquota da COFINS (em reais)
-            cofinsQtde.setVCOFINS("xxx");//Valor da COFINS
-   
-   return cofinsQtde;
-   }
-   public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSNT cofinsNt(){
-       
+        cofinsQtde.setCST("xxx");//Código de Situação Tributária da COFINS
+        cofinsQtde.setQBCProd("xxx");//Quantidade Vendida
+        cofinsQtde.setVAliqProd("xxx");//Alíquota da COFINS (em reais)
+        cofinsQtde.setVCOFINS("xxx");//Valor da COFINS
+
+        return cofinsQtde;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSNT cofinsNt() {
+
         TNFe.InfNFe.Det.Imposto.COFINS.COFINSNT cofinsNt = new TNFe.InfNFe.Det.Imposto.COFINS.COFINSNT();
-            cofinsNt.setCST("xxx");//Código de Situação Tributária da COFINS
-            
-   
-   return cofinsNt;
-   }
-   public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSOutr cofinsOutr(){
-       
+        cofinsNt.setCST("xxx");//Código de Situação Tributária da COFINS
+
+        return cofinsNt;
+    }
+
+    public static TNFe.InfNFe.Det.Imposto.COFINS.COFINSOutr cofinsOutr() {
+
         TNFe.InfNFe.Det.Imposto.COFINS.COFINSOutr cofinsOutr = new TNFe.InfNFe.Det.Imposto.COFINS.COFINSOutr();
-            cofinsOutr.setCST("xxx");//Código de Situação Tributária da COFINS
-            cofinsOutr.setVBC("xxx");//Valor da Base de Cálculo da COFINS
-            cofinsOutr.setPCOFINS("xxx");//Alíquota da COFINS (em percentual)
-            cofinsOutr.setQBCProd("");//Quantidade Vendida
-            cofinsOutr.setVAliqProd("");//Alíquota da COFINS (em reais)
-            cofinsOutr.setVCOFINS("xxx");//Valor da COFINS
-   
-   return cofinsOutr;
-   }
-   
-  
+        cofinsOutr.setCST("xxx");//Código de Situação Tributária da COFINS
+        cofinsOutr.setVBC("xxx");//Valor da Base de Cálculo da COFINS
+        cofinsOutr.setPCOFINS("xxx");//Alíquota da COFINS (em percentual)
+        cofinsOutr.setQBCProd("");//Quantidade Vendida
+        cofinsOutr.setVAliqProd("");//Alíquota da COFINS (em reais)
+        cofinsOutr.setVCOFINS("xxx");//Valor da COFINS
+
+        return cofinsOutr;
+    }
+
 }

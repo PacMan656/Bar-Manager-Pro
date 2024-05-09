@@ -5,19 +5,18 @@
  */
 package Nfe;
 
+import Bean.Fiscal;
+import DAO.FiscalDAO;
+import Util.ConstantesUtil;
+import Util.Estados;
 import br.com.swconsultoria.certificado.Certificado;
 import br.com.swconsultoria.certificado.CertificadoService;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import model.bean.Fiscal;
-import model.dao.FiscalDAO;
-import nfe.dom.ConfiguracoesIniciaisNfe;
-import nfe.exception.NfeException;
-import nfe.util.ConstantesUtil;
-import nfe.util.Estados;
 
 /**
  *
@@ -27,7 +26,7 @@ public class IniciaConfiguraçãoNfce {
     
    public static Certificado certificado;
    
-    public IniciaConfiguraçãoNfce(){
+    public IniciaConfiguraçãoNfce() throws FileNotFoundException{
     
         try {
             iniciaConfigurações();
@@ -39,7 +38,7 @@ public class IniciaConfiguraçãoNfce {
     }
     
     
-    public static ConfiguracoesIniciaisNfe iniciaConfigurações() throws NfeException, CertificadoException {
+    public static ConfiguracoesIniciaisNfe iniciaConfigurações() throws NfeException, CertificadoException, FileNotFoundException {
         
            // A1Pfx a = new A1Pfx();
            
@@ -70,7 +69,7 @@ public class IniciaConfiguraçãoNfce {
         
 }
     
-    public static void AiPfx(){
+    public static void AiPfx() throws FileNotFoundException{
         
         Fiscal f = new Fiscal();
          FiscalDAO fdao = new FiscalDAO();
@@ -100,7 +99,7 @@ public class IniciaConfiguraçãoNfce {
     
     }
     
-    private static Certificado certifidoA1Pfx() throws CertificadoException {
+    private static Certificado certifidoA1Pfx() throws CertificadoException, FileNotFoundException {
          
          FiscalDAO fdao = new FiscalDAO();
          String caminhoCertificado = null;

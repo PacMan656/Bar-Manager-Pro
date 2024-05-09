@@ -17,6 +17,7 @@ import Util.XmlUtil;
 import View.NotasFiscais;
 import br.com.swconsultoria.certificado.exception.CertificadoException;
 import br.com.swconsultoria.nfe.schema.envConfRecebto.TRetEnvEvento;
+import java.io.FileNotFoundException;
 
 /**
  *
@@ -28,7 +29,7 @@ public class ManifestaçãoNfe {
     public static String cnpj;
     public static String tipo;
 
-    public void recebechave(String chave1, String motivo1) throws CertificadoException, br.com.swconsultoria.nfe.exception.NfeException, NfeException {
+    public void recebechave(String chave1, String motivo1) throws CertificadoException, br.com.swconsultoria.nfe.exception.NfeException, NfeException, FileNotFoundException {
 
         tipo = motivo1;
         chave = chave1;
@@ -42,7 +43,7 @@ public class ManifestaçãoNfe {
         manifesta();
     }
 
-    public static void manifesta() throws br.com.swconsultoria.nfe.exception.NfeException, NfeException {
+    public static void manifesta() throws br.com.swconsultoria.nfe.exception.NfeException, NfeException, FileNotFoundException {
         StringBuilder sb = new StringBuilder();
 
         try {
